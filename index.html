@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekko — The macro tracker that thinks</title>
+  <meta name="description" content="AI-powered macro tracking with adaptive targets and personalized coaching. Coming soon to iOS and Android.">
+  <meta property="og:title" content="Rekko — The macro tracker that thinks">
+  <meta property="og:description" content="AI-powered macro tracking with adaptive targets and personalized coaching. Coming soon to iOS and Android.">
+  <meta property="og:image" content="screenshots/home.png.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rekko — The macro tracker that thinks">
+  <meta name="twitter:description" content="AI-powered macro tracking with adaptive targets and personalized coaching. Coming soon to iOS and Android.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%2300897B'/%3E%3Ctext x='16' y='22.5' font-family='Arial%2Csans-serif' font-size='19' font-weight='bold' text-anchor='middle' fill='white'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #121212;
+      --surface: #1E1E1E;
+      --border: #2A2A2A;
+      --teal: #00897B;
+      --teal-dark: #006B5E;
+      --text: #FFFFFF;
+      --text-muted: #9E9E9E;
+      --text-dim: #616161;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── NAVIGATION ────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.25s ease, border-color 0.25s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    nav.scrolled {
+      background: rgba(18, 18, 18, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom-color: var(--border);
+    }
+
+    .nav-wordmark {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--teal);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-badge {
+      background: rgba(0, 137, 123, 0.12);
+      color: var(--teal);
+      border: 1px solid rgba(0, 137, 123, 0.28);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ── HERO ──────────────────────────────────────────── */
+    .hero {
+      padding: 80px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 72px;
+    }
+
+    .hero-content { flex: 1; min-width: 0; }
+
+    .hero-headline {
+      font-size: clamp(40px, 5.5vw, 68px);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -2.5px;
+      margin-bottom: 22px;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 1.8vw, 19px);
+      color: var(--text-muted);
+      line-height: 1.65;
+      max-width: 460px;
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.18s forwards;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .hero-cta {
+      opacity: 0;
+      transform: translateY(22px);
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.38s forwards;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 15px 36px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+      font-family: inherit;
+      letter-spacing: -0.2px;
+    }
+
+    .btn-primary:hover {
+      background: #00796B;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 137, 123, 0.35);
+    }
+
+    .hero-phone {
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateY(22px);
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.48s forwards;
+    }
+
+    .phone-frame-large {
+      width: 240px;
+      aspect-ratio: 9 / 19.5;
+      border: 2px solid var(--border);
+      border-radius: 40px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 24px 64px rgba(0, 0, 0, 0.7),
+        0 8px 24px rgba(0, 137, 123, 0.08);
+    }
+
+    .phone-frame-large img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── FEATURES ──────────────────────────────────────── */
+    .features {
+      padding: 80px 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--teal);
+      box-shadow: 0 0 28px rgba(0, 137, 123, 0.14), 0 4px 16px rgba(0, 0, 0, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 18px;
+      display: block;
+    }
+
+    .feature-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .feature-body {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── SCREENSHOTS ───────────────────────────────────── */
+    .screenshots {
+      padding: 80px 32px;
+      background: #0D0D0D;
+    }
+
+    .screenshots-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-headline {
+      font-size: clamp(26px, 3vw, 40px);
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      margin-bottom: 48px;
+      color: var(--text);
+    }
+
+    .screenshots-scroll-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 8px;
+    }
+
+    .screenshots-scroll-wrapper::-webkit-scrollbar { display: none; }
+
+    .screenshots-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      min-width: 860px;
+    }
+
+    .screenshot-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .phone-frame-small {
+      width: 160px;
+      aspect-ratio: 9 / 19.5;
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .phone-frame-small:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 16px rgba(0, 137, 123, 0.1);
+    }
+
+    .phone-frame-small img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .screenshot-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--teal);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    /* ── COMING SOON ───────────────────────────────────── */
+    .coming-soon {
+      padding: 80px 32px;
+      background: linear-gradient(135deg, #00897B 0%, #006B5E 100%);
+      text-align: center;
+    }
+
+    .coming-soon-headline {
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 700;
+      color: white;
+      margin-bottom: 12px;
+      letter-spacing: -0.8px;
+    }
+
+    .coming-soon-sub {
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.82);
+      margin-bottom: 36px;
+    }
+
+    .email-form {
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto 32px;
+    }
+
+    .email-input {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      font-family: inherit;
+      background: white;
+      color: #121212;
+      outline: none;
+      transition: box-shadow 0.18s ease;
+    }
+
+    .email-input::placeholder { color: #9E9E9E; }
+
+    .email-input:focus {
+      box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.3);
+    }
+
+    .email-input.error {
+      box-shadow: 0 0 0 2px #ef5350;
+    }
+
+    .btn-notify {
+      padding: 14px 26px;
+      border-radius: 10px;
+      border: none;
+      background: white;
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .btn-notify:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .thanks-msg {
+      display: none;
+      font-size: 20px;
+      color: white;
+      font-weight: 600;
+      margin-bottom: 32px;
+    }
+
+    .store-pills {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .store-pill {
+      display: inline-block;
+      padding: 10px 22px;
+      border: 1.5px solid rgba(255, 255, 255, 0.55);
+      border-radius: 24px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      background: transparent;
+      letter-spacing: -0.1px;
+    }
+
+    /* ── FOOTER ────────────────────────────────────────── */
+    footer {
+      background: #0A0A0A;
+      border-top: 1px solid var(--teal);
+      padding: 40px 32px;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .footer-wordmark {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--teal);
+      display: block;
+      margin-bottom: 6px;
+      letter-spacing: -0.4px;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .footer-center {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      justify-content: flex-end;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.18s ease;
+    }
+
+    .footer-links a:hover { color: var(--teal); }
+
+    /* ── RESPONSIVE ────────────────────────────────────── */
+    @media (max-width: 880px) {
+      nav { padding: 0 20px; }
+
+      .hero {
+        flex-direction: column-reverse;
+        padding: 48px 20px;
+        gap: 36px;
+        text-align: center;
+      }
+
+      .hero-content { order: 2; }
+      .hero-phone { order: 1; }
+
+      .hero-badges { justify-content: center; }
+
+      .hero-sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .features {
+        padding: 48px 20px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .screenshots {
+        padding: 48px 20px;
+      }
+
+      .coming-soon {
+        padding: 48px 20px;
+      }
+
+      .email-form {
+        flex-direction: column;
+        max-width: 360px;
+      }
+
+      footer { padding: 36px 20px; }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ──────────────────────────────────────── -->
+<nav id="navbar">
+  <span class="nav-wordmark">Rekko</span>
+  <span class="nav-badge">Coming Soon</span>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-headline">The macro tracker<br>that thinks</h1>
+    <p class="hero-sub">AI-powered food logging, adaptive macro targets, and personalized coaching — built for people who take their nutrition seriously.</p>
+    <div class="hero-badges">
+      <span class="badge-pill">📱 iOS</span>
+      <span class="badge-pill">🤖 Android</span>
+    </div>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('notify').scrollIntoView({behavior:'smooth'})">Coming Soon</button>
+    </div>
+  </div>
+  <div class="hero-phone">
+    <div class="phone-frame-large">
+      <img src="screenshots/home.png.jpg" alt="Rekko app — home screen">
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ─────────────────────────────────────────── -->
+<section class="features">
+  <p class="section-label">Why Rekko</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🤖</span>
+      <h3 class="feature-title">Log food in seconds</h3>
+      <p class="feature-body">Chat naturally, scan barcodes, or speak your meal. Rekko's AI figures out the rest — no manual searching required.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🧠</span>
+      <h3 class="feature-title">Targets that adjust to you</h3>
+      <p class="feature-body">Rekko analyzes your weight trend weekly and fine-tunes your macro targets automatically. Science-backed, transparent, always in your control.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💬</span>
+      <h3 class="feature-title">Your personal nutrition coach</h3>
+      <p class="feature-body">Ask anything about your nutrition, get personalized insights based on your actual data, and stay on track with a coach that knows your goals.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCREENSHOTS ──────────────────────────────────────── -->
+<section class="screenshots">
+  <div class="screenshots-inner">
+    <p class="section-label">Built for Results</p>
+    <h2 class="section-headline">Every screen designed with purpose</h2>
+    <div class="screenshots-scroll-wrapper">
+      <div class="screenshots-grid">
+        <div class="screenshot-item">
+          <div class="phone-frame-small">
+            <img src="screenshots/home.png.jpg" alt="Home screen">
+          </div>
+          <span class="screenshot-label">Home</span>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-frame-small">
+            <img src="screenshots/insights.png.jpg" alt="Insights screen">
+          </div>
+          <span class="screenshot-label">Insights</span>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-frame-small">
+            <img src="screenshots/progress.png.jpg" alt="Progress screen">
+          </div>
+          <span class="screenshot-label">Progress</span>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-frame-small">
+            <img src="screenshots/coach.png.jpg" alt="Coach screen">
+          </div>
+          <span class="screenshot-label">Coach</span>
+        </div>
+        <div class="screenshot-item">
+          <div class="phone-frame-small">
+            <img src="screenshots/plan.png.jpg" alt="Plan screen">
+          </div>
+          <span class="screenshot-label">Plan</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMING SOON ──────────────────────────────────────── -->
+<section class="coming-soon" id="notify">
+  <h2 class="coming-soon-headline">Rekko is coming soon</h2>
+  <p class="coming-soon-sub">Be the first to know when we launch on iOS and Android.</p>
+
+  <div id="email-form-wrap">
+    <div class="email-form">
+      <input type="email" class="email-input" id="email-input" placeholder="your@email.com" autocomplete="email">
+      <button class="btn-notify" id="notify-btn">Notify Me</button>
+    </div>
+  </div>
+
+  <p class="thanks-msg" id="thanks-msg">✓ Thanks! We'll be in touch.</p>
+
+  <div class="store-pills">
+    <span class="store-pill">🍎 App Store — Coming Soon</span>
+    <span class="store-pill">🤖 Google Play — Coming Soon</span>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <span class="footer-wordmark">Rekko</span>
+      <p class="footer-copy">© 2026 Rekko LLC. All rights reserved.<br>Developed by Rekko LLC, a Texas limited liability company.</p>
+    </div>
+    <div class="footer-center">Rekko LLC · Houston, TX</div>
+    <nav class="footer-links" aria-label="Footer navigation">
+      <a href="https://userekko.github.io/rekko-legal/privacy.html">Privacy Policy</a>
+      <a href="https://userekko.github.io/rekko-legal/terms.html">Terms</a>
+      <a href="mailto:support@userekko.com">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll blur
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function () {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // Email notify form
+  function handleNotify() {
+    var input = document.getElementById('email-input');
+    var val = input.value.trim();
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      input.classList.add('error');
+      setTimeout(function () { input.classList.remove('error'); }, 1600);
+      input.focus();
+      return;
+    }
+    document.getElementById('email-form-wrap').style.display = 'none';
+    var msg = document.getElementById('thanks-msg');
+    msg.style.display = 'block';
+  }
+
+  document.getElementById('notify-btn').addEventListener('click', handleNotify);
+  document.getElementById('email-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleNotify();
+  });
+</script>
+
+</body>
+</html>
