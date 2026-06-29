@@ -685,7 +685,7 @@
   }, { passive: true });
 
   // Email notify form
-  function handleNotify() {
+  async function handleNotify() {
     var input = document.getElementById('email-input');
     var val = input.value.trim();
     if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
@@ -694,9 +694,36 @@
       input.focus();
       return;
     }
-    document.getElementById('email-form-wrap').style.display = 'none';
-    var msg = document.getElementById('thanks-msg');
-    msg.style.display = 'block';
+
+    var btn = document.getElementById('notify-btn');
+    var existing = document.getElementById('form-error');
+    if (existing) existing.remove();
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+      var res = await fetch('https://bvsxuhyotpwhcapgnwyp.supabase.co/functions/v1/waitlist-signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: val }),
+      });
+      var data = await res.json();
+      if (res.ok && data.success) {
+        document.getElementById('email-form-wrap').style.display = 'none';
+        document.getElementById('thanks-msg').style.display = 'block';
+      } else {
+        throw new Error(data.error || 'Request failed');
+      }
+    } catch (e) {
+      var err = document.createElement('p');
+      err.id = 'form-error';
+      err.style.cssText = 'color:#ef5350;font-size:14px;margin-top:10px;';
+      err.textContent = 'Something went wrong. Please try again.';
+      document.getElementById('email-form-wrap').insertAdjacentElement('afterend', err);
+      btn.disabled = false;
+      btn.textContent = 'Notify Me';
+    }
   }
 
   document.getElementById('notify-btn').addEventListener('click', handleNotify);
