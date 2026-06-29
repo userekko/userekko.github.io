@@ -73,6 +73,22 @@
       letter-spacing: -0.5px;
     }
 
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.18s ease;
+    }
+
+    .nav-link:hover { color: var(--teal); }
+
     .nav-badge {
       background: rgba(0, 137, 123, 0.12);
       color: var(--teal);
@@ -535,7 +551,10 @@
 <!-- ── NAVIGATION ──────────────────────────────────────── -->
 <nav id="navbar">
   <span class="nav-wordmark">Rekko</span>
-  <span class="nav-badge">Coming Soon</span>
+  <div class="nav-right">
+    <a href="contact.html" class="nav-link">Contact</a>
+    <span class="nav-badge">Coming Soon</span>
+  </div>
 </nav>
 
 <!-- ── HERO ────────────────────────────────────────────── -->
