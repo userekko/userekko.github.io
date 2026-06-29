@@ -705,7 +705,10 @@
     try {
       var res = await fetch('https://bvsxuhyotpwhcapgnwyp.supabase.co/functions/v1/waitlist-signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'sb_publishable_g0f1yP_Ti7jzSbFkii5Zag_k7q5qIJA'
+        },
         body: JSON.stringify({ email: val }),
       });
       var data = await res.json();
